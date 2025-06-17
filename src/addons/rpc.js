@@ -3,7 +3,7 @@ const { version } = require("../../package.json");
 
 class DiscordRPC {
   constructor() {
-    this.clientId = "1233829658345078846";
+    this.clientId = "1384666682261246184";
     this.startTimestamp = Date.now();
     this.client = new rpc.Client({ transport: "ipc" });
     this.init();
@@ -36,7 +36,6 @@ class DiscordRPC {
       largeImageKey: "coke",
       largeImageText: `Coke Client v${version}`,
       instance: false,
-
     };
   }
 }
