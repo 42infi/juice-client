@@ -1,57 +1,30 @@
-name: Build
-
-on:
-  workflow_dispatch:
-
+name: Build/Release
+on: workflow_dispatch
 jobs:
   build:
     runs-on: ${{ matrix.os }}
 
-    permissions:
-      contents: write
-
     strategy:
       matrix:
-        os: [macos-13, windows-latest, ubuntu-latest]
-        include:
-          - os: windows-latest
-            arch: x64
-          - os: macos-13
-            arch: x64
-          - os: ubuntu-latest
-            arch: x64
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Install g++-multilib
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install g++-multilib
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
         with:
-          node-version: '18.x'
+          node-version: '16.14.2'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: Get version and name from package.json
-        id: get_version_name
-        run: |
-          echo "::set-output name=version::$(node -p "require('./package.json').version")"
-          echo "::set-output name=name::$(node -p "require('./package.json').name")"
-
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v2.0.6
-        env:
-          GITHUB_TOKEN: ${{ secrets.JUICE_DEPLOY }}
-        with:
-          tag_name: v${{ steps.get_version_name.outputs.version }}
-          name: Release ${{ steps.get_version_name.outputs.version }}
-          draft: true
-          prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build Electron App
-        run: npm run build
+      - name: Build and release if draft exists
+        run: npm run dist
         env:
           GH_TOKEN: ${{ secrets.JUICE_DEPLOY }}
