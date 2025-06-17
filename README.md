@@ -1,3 +1,8 @@
+# DISCLAIMER: 
+## I made this client to have a working client for myself, which is not the official one, which I do not trust.
+## You can use this one at your own risk (idk whats allowed regarding clients right now)
+
+
 # Coke Client // irrvlo requested not to use juice name
 
 A light Electron client for Kirka.io. Originally made by irrvlo.
