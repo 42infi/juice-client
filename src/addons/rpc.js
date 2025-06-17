@@ -33,13 +33,10 @@ class DiscordRPC {
     return {
       startTimestamp: this.startTimestamp,
       state: "In the lobby",
-      largeImageKey: "juice",
-      largeImageText: `Juice Client v${version}`,
+      largeImageKey: "coke",
+      largeImageText: `Coke Client v${version}`,
       instance: false,
-      buttons: [
-        { label: "Download", url: "https://juice.irrvlo.xyz" },
-        { label: "Discord", url: "https://discord.gg/FjzAAdSjng" },
-      ],
+
     };
   }
 }

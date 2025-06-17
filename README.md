@@ -1,4 +1,4 @@
-# Juice Client
+# Coke Client // irrvlo requested not to use juice name
 
 A light Electron client for Kirka.io. Originally made by irrvlo.
 
@@ -52,7 +52,7 @@ Windows, Linux and MacOS releases are available.
 
 # Is it safe?
 
-Juice Client is 100% completely safe to use. Releases are built directly with the source code using Github Workflows (Thanks Error!). If you face any issues, join our [discord](https://discord.gg/FjzAAdSjng) to report bugs.
+Coke Client is 100% completely safe to use. Releases are built directly with the source code using Github Workflows (Thanks Error!). If you face any issues, join our [discord](https://discord.gg/FjzAAdSjng) to report bugs.
 
 ## Credits
 

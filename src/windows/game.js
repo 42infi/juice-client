@@ -41,7 +41,7 @@ ipcMain.on("update-setting", (e, key, value) => {
 ipcMain.on("open-swapper-folder", () => {
   const swapperPath = path.join(
     app.getPath("documents"),
-    "JuiceClient/swapper/assets"
+    "CokeClient/swapper/assets"
   );
 
   if (!fs.existsSync(swapperPath)) {
@@ -55,7 +55,7 @@ ipcMain.on("open-swapper-folder", () => {
 ipcMain.on("open-scripts-folder", () => {
   const scriptsPath = path.join(
     app.getPath("documents"),
-    "JuiceClient/scripts"
+    "CokeClient/scripts"
   );
 
   if (!fs.existsSync(scriptsPath)) {
@@ -80,7 +80,7 @@ const createWindow = () => {
   gameWindow = new BrowserWindow({
     fullscreen: settings.auto_fullscreen,
     icon: path.join(__dirname, "../assets/img/icon.png"),
-    title: "Juice Client",
+    title: "Coke Client",
     width: 1280,
     height: 720,
     show: false,
@@ -95,7 +95,7 @@ const createWindow = () => {
 
   const scriptsPath = path.join(
     app.getPath("documents"),
-    "JuiceClient",
+    "CokeClient",
     "scripts"
   );
   if (!fs.existsSync(scriptsPath)) {
