@@ -40,6 +40,7 @@ Windows, Linux and MacOS releases are available.
 - Proxy Link Support
 - Menu Keybind Reminder
 - No Pulp (aka smooth)
+- ad blocker
 
 ## Hotkeys
 | Hotkey | Description |
