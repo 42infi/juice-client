@@ -1,11 +1,7 @@
 # Juice Client
 
-A light Electron client for Kirka.io. Join our [discord](https://discord.gg/FjzAAdSjng) for support and update notifications.
+A light Electron client for Kirka.io. Originally made by irrvlo.
 
-# Download
-
-- [Website](https://juice.irrvlo.xyz)
-- [Releases](https://github.com/irrvlo/juice-client/releases)
 
 Windows, Linux and MacOS releases are available.
 # What features does this have?

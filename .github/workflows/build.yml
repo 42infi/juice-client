@@ -54,4 +54,4 @@ jobs:
       - name: Build Electron App
         run: npm run build
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.JUICE_DEPLOY }}

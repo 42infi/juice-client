@@ -7,7 +7,7 @@ autoUpdater.autoDownload = true;
 
 autoUpdater.setFeedURL({
   provider: "github",
-  owner: "irrvlo",
+  owner: "42infi", //just for the auto updater not trying to take credit lol
   repo: "juice-client",
 });
 
@@ -21,7 +21,6 @@ const createWindow = () => {
     show: false,
     frame: false,
     transparent: true,
-    fullscreenable: false,
     resizable: false,
     fullscreenable: false,
     webPreferences: {
