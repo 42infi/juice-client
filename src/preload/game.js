@@ -35,6 +35,14 @@ const originalConsole = {
     trace: console.trace.bind(console),
 };
 
+//adblock
+Object.defineProperty(window, 'aiptag', {
+    set(v) {
+    },
+    get() {
+    }
+});
+
 document.addEventListener("DOMContentLoaded", async () => {
     console.log = originalConsole.log;
     console.warn = originalConsole.warn;
