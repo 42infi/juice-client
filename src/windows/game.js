@@ -1,7 +1,7 @@
-const { BrowserWindow, ipcMain, app, shell } = require("electron");
-const { default_settings, allowed_urls } = require("../util/defaults.json");
-const { registerShortcuts } = require("../util/shortcuts");
-const { applySwitches } = require("../util/switches");
+const {BrowserWindow, ipcMain, app, shell} = require("electron");
+const {default_settings, allowed_urls} = require("../util/defaults.json");
+const {registerShortcuts} = require("../util/shortcuts");
+const {applySwitches} = require("../util/switches");
 const DiscordRPC = require("../addons/rpc");
 const path = require("path");
 const Store = require("electron-store");
@@ -9,67 +9,67 @@ const fs = require("fs");
 
 const store = new Store();
 if (!store.has("settings")) {
-  store.set("settings", default_settings);
+    store.set("settings", default_settings);
 }
 
 const settings = store.get("settings");
 
 for (const key in default_settings) {
-  if (
-    !settings.hasOwnProperty(key) ||
-    typeof settings[key] !== typeof default_settings[key]
-  ) {
-    settings[key] = default_settings[key];
-    store.set("settings", settings);
-  }
+    if (
+        !settings.hasOwnProperty(key) ||
+        typeof settings[key] !== typeof default_settings[key]
+    ) {
+        settings[key] = default_settings[key];
+        store.set("settings", settings);
+    }
 }
 
 if (!allowed_urls.includes(settings.base_url)) {
-  settings.base_url = default_settings.base_url;
-  store.set("settings", settings);
+    settings.base_url = default_settings.base_url;
+    store.set("settings", settings);
 }
 
 ipcMain.on("get-settings", (e) => {
-  e.returnValue = settings;
+    e.returnValue = settings;
 });
 
 ipcMain.on("update-setting", (e, key, value) => {
-  settings[key] = value;
-  store.set("settings", settings);
+    settings[key] = value;
+    store.set("settings", settings);
 });
 
 ipcMain.on("open-swapper-folder", () => {
-  const swapperPath = path.join(
-    app.getPath("documents"),
-    "CokeClient/swapper/assets"
-  );
+    const swapperPath = path.join(
+        app.getPath("documents"),
+        "CokeClient/swapper/assets"
+    );
 
-  if (!fs.existsSync(swapperPath)) {
-    fs.mkdirSync(swapperPath, { recursive: true });
-    shell.openPath(swapperPath);
-  } else {
-    shell.openPath(swapperPath);
-  }
+    if (!fs.existsSync(swapperPath)) {
+        fs.mkdirSync(swapperPath, {recursive: true});
+        shell.openPath(swapperPath);
+    } else {
+        shell.openPath(swapperPath);
+    }
 });
 
 ipcMain.on("open-scripts-folder", () => {
-  const scriptsPath = path.join(
-    app.getPath("documents"),
-    "CokeClient/scripts"
-  );
+    const scriptsPath = path.join(
+        app.getPath("documents"),
+        "CokeClient/scripts"
+    );
 
-  if (!fs.existsSync(scriptsPath)) {
-    fs.mkdirSync(scriptsPath, { recursive: true });
-    shell.openPath(scriptsPath);
-  } else {
-    shell.openPath(scriptsPath);
-  }
+    if (!fs.existsSync(scriptsPath)) {
+        fs.mkdirSync(scriptsPath, {recursive: true});
+        shell.openPath(scriptsPath);
+    } else {
+        shell.openPath(scriptsPath);
+    }
 });
 
 ipcMain.on("reset-juice-settings", () => {
-  store.set("settings", default_settings);
-  app.relaunch();
-  app.quit();
+    store.set("settings", default_settings);
+    app.relaunch();
+    app.quit();
 });
 
 let gameWindow;
@@ -77,123 +77,112 @@ let gameWindow;
 applySwitches(settings);
 
 const createWindow = () => {
-  gameWindow = new BrowserWindow({
-    fullscreen: settings.auto_fullscreen,
-    icon: path.join(__dirname, "../assets/img/icon.png"),
-    title: "Coke Client",
-    width: 1280,
-    height: 720,
-    show: false,
-    backgroundColor: "#141414",
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      webSecurity: false,
-      preload: path.join(__dirname, "../preload/game.js"),
-    },
-  });
+    gameWindow = new BrowserWindow({
+        fullscreen: settings.auto_fullscreen,
+        icon: path.join(__dirname, "../assets/img/icon.png"),
+        title: "Coke Client",
+        width: 1280,
+        height: 720,
+        show: false,
+        backgroundColor: "#141414",
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+            webSecurity: false,
+            preload: path.join(__dirname, "../preload/game.js"),
+        },
+    });
 
-  const scriptsPath = path.join(
-    app.getPath("documents"),
-    "CokeClient",
-    "scripts"
-  );
-  if (!fs.existsSync(scriptsPath)) {
-    fs.mkdirSync(scriptsPath, { recursive: true });
-  }
-
-  ipcMain.on("get-scripts-path", (e) => {
-    e.returnValue = scriptsPath;
-  });
-
-  gameWindow.webContents.on("new-window", (e, url) => {
-    e.preventDefault();
-    require("electron").shell.openExternal(url);
-  });
-
-  gameWindow.webContents.on("did-navigate-in-page", (e, url) => {
-    gameWindow.webContents.send("url-change", url);
-
-    if (settings.discord_rpc && gameWindow.DiscordRPC) {
-      const base_url = settings.base_url;
-      const stateMap = {
-        [`${base_url}`]: "In the lobby",
-        [`${base_url}hub/leaderboard`]: "Viewing the leaderboard",
-        [`${base_url}hub/clans/champions-league`]:
-          "Viewing the clan leaderboard",
-        [`${base_url}hub/clans/my-clan`]: "Viewing their clan",
-        [`${base_url}hub/market`]: "Viewing the market",
-        [`${base_url}hub/live`]: "Viewing videos",
-        [`${base_url}hub/news`]: "Viewing news",
-        [`${base_url}hub/terms`]: "Viewing the terms of service",
-        [`${base_url}store`]: "Viewing the store",
-        [`${base_url}servers/main`]: "Viewing main servers",
-        [`${base_url}servers/parkour`]: "Viewing parkour servers",
-        [`${base_url}servers/custom`]: "Viewing custom servers",
-        [`${base_url}quests/hourly`]: "Viewing hourly quests",
-        [`${base_url}friends`]: "Viewing friends",
-        [`${base_url}inventory`]: "Viewing their inventory",
-      };
-
-      let state;
-
-      if (stateMap[url]) {
-        state = stateMap[url];
-      } else if (url.startsWith(`${base_url}games/`)) {
-        state = "In a match";
-      } else if (url.startsWith(`${base_url}profile/`)) {
-        state = "Viewing a profile";
-      } else {
-        state = "In the lobby";
-      }
-
-      gameWindow.DiscordRPC.setState(state);
+    const scriptsPath = path.join(
+        app.getPath("documents"),
+        "CokeClient",
+        "scripts"
+    );
+    if (!fs.existsSync(scriptsPath)) {
+        fs.mkdirSync(scriptsPath, {recursive: true});
     }
-  });
 
-  //most common user agents, might update them from time to time      // https://www.useragents.me/#most-common-desktop-useragents
-  const userAgents = [
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.10 Safari/605.1.1",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.3",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Trailer/93.3.8652.5",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 OPR/117.0.0.",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.1958",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.3"
-  ];
+    ipcMain.on("get-scripts-path", (e) => {
+        e.returnValue = scriptsPath;
+    });
 
-  gameWindow.loadURL(settings.base_url);
-  gameWindow.webContents.setUserAgent(userAgents[Math.floor(Math.random() * (0 - userAgents.length)) + userAgents.length]);
-  gameWindow.removeMenu();
-  gameWindow.maximize();
+    gameWindow.webContents.on("new-window", (e, url) => {
+        e.preventDefault();
+        require("electron").shell.openExternal(url);
+    });
 
-  gameWindow.once("ready-to-show", () => {
-    gameWindow.show();
-  });
+    gameWindow.webContents.on("did-navigate-in-page", (e, url) => {
+        gameWindow.webContents.send("url-change", url);
 
-  registerShortcuts(gameWindow);
+        if (settings.discord_rpc && gameWindow.DiscordRPC) {
+            const base_url = settings.base_url;
+            const stateMap = {
+                [`${base_url}`]: "In the lobby",
+                [`${base_url}hub/leaderboard`]: "Viewing the leaderboard",
+                [`${base_url}hub/clans/champions-league`]:
+                    "Viewing the clan leaderboard",
+                [`${base_url}hub/clans/my-clan`]: "Viewing their clan",
+                [`${base_url}hub/market`]: "Viewing the market",
+                [`${base_url}hub/live`]: "Viewing videos",
+                [`${base_url}hub/news`]: "Viewing news",
+                [`${base_url}hub/terms`]: "Viewing the terms of service",
+                [`${base_url}store`]: "Viewing the store",
+                [`${base_url}servers/main`]: "Viewing main servers",
+                [`${base_url}servers/parkour`]: "Viewing parkour servers",
+                [`${base_url}servers/custom`]: "Viewing custom servers",
+                [`${base_url}quests/hourly`]: "Viewing hourly quests",
+                [`${base_url}friends`]: "Viewing friends",
+                [`${base_url}inventory`]: "Viewing their inventory",
+            };
 
-  gameWindow.on("page-title-updated", (e) => e.preventDefault());
+            let state;
 
-  gameWindow.on("closed", () => {
-    ipcMain.removeAllListeners("get-settings");
-    ipcMain.removeAllListeners("update-setting");
-    gameWindow = null;
-  });
+            if (stateMap[url]) {
+                state = stateMap[url];
+            } else if (url.startsWith(`${base_url}games/`)) {
+                state = "In a match";
+            } else if (url.startsWith(`${base_url}profile/`)) {
+                state = "Viewing a profile";
+            } else {
+                state = "In the lobby";
+            }
+
+            gameWindow.DiscordRPC.setState(state);
+        }
+    });
+
+    const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const safariVersion = `${randInt(530, 545)}.${randInt(32, 38)}`;
+
+    // Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) coke-client/1.1.18 Chrome/85.0.4183.121 Electron/10.4.7 Safari/537.36
+
+    gameWindow.loadURL(settings.base_url);
+    gameWindow.webContents.setUserAgent(`Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/${safariVersion} (KHTML, like Gecko) Chrome/${randInt(78, 89)}.0.${randInt(4163, 4189)}.${randInt(111, 129)} Electron/10.4.7 Safari/${safariVersion}`);
+    gameWindow.removeMenu();
+    gameWindow.maximize();
+
+    gameWindow.once("ready-to-show", () => {
+        gameWindow.show();
+    });
+
+    registerShortcuts(gameWindow);
+
+    gameWindow.on("page-title-updated", (e) => e.preventDefault());
+
+    gameWindow.on("closed", () => {
+        ipcMain.removeAllListeners("get-settings");
+        ipcMain.removeAllListeners("update-setting");
+        gameWindow = null;
+    });
 };
 
 const initGame = () => {
-  createWindow();
-  if (settings.discord_rpc) {
-    gameWindow.DiscordRPC = new DiscordRPC();
-  }
+    createWindow();
+    if (settings.discord_rpc) {
+        gameWindow.DiscordRPC = new DiscordRPC();
+    }
 };
 
 module.exports = {
-  initGame,
+    initGame,
 };
